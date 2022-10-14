@@ -1,0 +1,22 @@
+{
+  "compilerOptions": {
+    "lib": ["ESNext", "DOM"],
+    "module": "NodeNext",
+    "target": "ESNext",
+    "strict": true,
+    "alwaysStrict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "moduleResolution": "NodeNext",
+    "checkJs": true,
+    "allowJs": true,
+    "resolveJsonModule": false,
+    "baseUrl": ".",
+  },
+  "exclude": [
+    "node_modules",
+    ".vscode",
+    "scripts"
+  ],
+}

@@ -1,0 +1,25 @@
+{
+    "name": "corvee-liste-az",
+    "version": "0.0.1",
+    "description": "",
+    "type": "module",
+    "exports": "./index.js",
+    "engines": {
+        "node": ">=18.1.0"
+    },
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "harvest": "node harvest.js",
+        "process": "node process.js"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "dependencies": {
+        "@corvee/core": "file:../corvee/packages/core",
+        "@corvee/harvester": "file:../corvee/packages/harvester",
+        "axios": "^1.1.2",
+        "jsdom": "^20.0.1",
+        "yargs": "^17.5.1"
+    }
+}
