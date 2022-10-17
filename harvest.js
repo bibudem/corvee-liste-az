@@ -3,9 +3,9 @@ import { JSDOM } from 'jsdom'
 import readline from 'readline'
 import yargs from 'yargs'
 import { hideBin } from 'yargs/helpers'
-import { Harvester } from '@corvee/harvester'
+import { Harvester } from 'corvee-harvester'
 import { saveRecords } from './utils/index.js'
-import { console, inspect } from '@corvee/core'
+import { console, inspect } from 'corvee-core'
 
 import config from './config/harvester.js'
 
@@ -75,18 +75,7 @@ async function harvest() {
 
     const harvester = new Harvester(config)
 
-    harvester.addUrl(links)
-
-    // harvester.setLinkParser(function linkParser() {
-    //     return Array
-    //         .from(/** @type {NodeListOf<HTMLAnchorElement>} */(document.querySelectorAll('#s-lg-az-results .s-lg-az-result > .s-lg-az-result-title > a[href]')))
-    //         .map(link => ({
-    //             url: link.href,
-    //             text: link.firstChild?.textContent || '',
-    //             urlData: link.getAttribute('href'),
-    //             isNavigationRequest: true
-    //         }))
-    // })
+    await harvester.addUrl(links)
 
     harvester.on('request', function onRequest(request) {
         console.info(`[${request.retryCount}] Request url: ${request.url}`);

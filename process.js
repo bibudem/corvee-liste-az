@@ -5,11 +5,9 @@ import yargs from 'yargs'
 import { hideBin } from 'yargs/helpers'
 import { table, getBorderCharacters } from 'table'
 import colors from 'colors/safe.js'
-import { CorveeProcessor } from '@corvee/processor'
+import { CorveeProcessor } from 'corvee-processor'
 import { filters, messages } from './filters/index.js'
-import { toSql } from './utils/to-sql.js'
-// import { addContexts } from './lib/add-contexts.js'
-import { console, inspect } from '@corvee/core'
+import { console, inspect } from 'corvee-core'
 
 const start = Date.now();
 const today = new Date();
@@ -34,8 +32,6 @@ const argv = yargs(hideBin(process.argv))
 const job = argv.job;
 const baseDir = join(dirname(fileURLToPath(import.meta.url)), 'data');
 const processedFilePath = join(baseDir, `${job}_processed.json`);
-const unfilteredFilePath = join(baseDir, `${job}_unfiltered.json`);
-// const browsingContextsPath = join(baseDir, `${job}_browsing-contexts.json`)
 const harvestedDataPath = join(baseDir, `${job}_harvested.json`)
 const reportTypesPath = join(baseDir, `${job}_reports-types.json`)
 
@@ -86,16 +82,10 @@ async function doProcess(records) {
 
     const processor = new CorveeProcessor({
         filters: [
-            // devExcludeUrlsPlugin,
             ...filters,
-            // tmpPlugin
         ],
         messages
     });
-
-    // processor.on('http-30x-permanent-redirect-failure', function (record) {
-    //     console.log(inspect(record))
-    // })
 
     processor.on('filtered', (record, filter) => {
         noisyErrors.add(filter.code)
@@ -114,10 +104,6 @@ async function doProcess(records) {
     console.log('Starting processor...')
 
     let result = await processor.process(records);
-
-    // console.log('Adding browsing contexts...')
-
-    // result.records = addContexts(result.records, browsingContexts)
 
     result.records.forEach(record => {
         Object.keys(record).forEach(prop => reportProperties.add(prop))
@@ -192,7 +178,6 @@ async function doProcess(records) {
     console.log(`Records properties: ${[...reportProperties.values()].sort().join(', ')}`)
 
     await writeFile(processedFilePath, JSON.stringify(result.records, null, 2))
-    await writeFile(unfilteredFilePath, JSON.stringify(result.unfilteredRecords, null, 2))
 
     /**
      * @type {Partial<{string: Array<string>}>}
@@ -212,12 +197,6 @@ async function doProcess(records) {
         .filter(record => record.reports.length > 0);
 
     console.log(`Found ${n(result.records.length)} records with problem.`)
-
-    await toSql({
-        data: result.records,
-        dir: baseDir,
-        job
-    })
 
     const sortedSilentErrors = [...silentReports.entries()]
         .sort((a, b) => {
