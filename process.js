@@ -35,7 +35,6 @@ const processedFilePath = join(baseDir, `${job}_processed.json`);
 const harvestedDataPath = join(baseDir, `${job}_harvested.json`)
 const reportTypesPath = join(baseDir, `${job}_reports-types.json`)
 
-// const browsingContexts = JSON.parse(await readFile(browsingContextsPath))
 const harvestedData = JSON.parse(await readFile(harvestedDataPath, 'utf-8'))
 
 const noisyErrors = new Set()
@@ -54,7 +53,7 @@ function n(n) {
 }
 
 /**
- * @param {Array<Record>} records
+ * @param {Array<import('corvee-harvester').RecordType>} records
  */
 async function doProcess(records) {
 
@@ -81,9 +80,7 @@ async function doProcess(records) {
     })
 
     const processor = new CorveeProcessor({
-        filters: [
-            ...filters,
-        ],
+        filters,
         messages
     });
 
@@ -191,10 +188,12 @@ async function doProcess(records) {
 
     result.records = result.records
         .map(record => {
-            record.reports = record.reports.filter(report => report.level !== 'info');
+            if (Array.isArray(record.reports)) {
+                record.reports = record.reports.filter(report => report.level !== 'info');
+            }
             return record;
         })
-        .filter(record => record.reports.length > 0);
+        .filter(record => Array.isArray(record.reports) && record.reports.length > 0);
 
     console.log(`Found ${n(result.records.length)} records with problem.`)
 

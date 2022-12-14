@@ -18,14 +18,14 @@ const defaultJob = `${year}-${month}-${day}`;
 
 const argv = yargs(hideBin(process.argv))
     .options({
-        j: {
-            alias: 'job',
+        job: {
+            alias: 'j',
             default: defaultJob,
             describe: `Job id. Defaults to today\'s date: ${defaultJob}`,
             type: 'string'
         },
-        r: {
-            alias: 'resume',
+        resume: {
+            alias: 'r',
             default: false,
             type: 'boolean',
             describe: 'Resumes a previously stoped job. Requires --job options.',
@@ -33,7 +33,7 @@ const argv = yargs(hideBin(process.argv))
         }
     })
     .help()
-    .argv;
+    .parseSync();
 
 const job = argv.job;
 

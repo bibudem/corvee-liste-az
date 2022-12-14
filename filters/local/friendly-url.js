@@ -1,5 +1,5 @@
 export default {
   code: 'friendly-url',
   level: 'error',
-  test: (record) => !record.url.startsWith('https://libguides.bib.umontreal.ca/')
+  test: (/** @type {import('corvee-harvester').RecordType} */ record) => !record.url.startsWith('https://libguides.bib.umontreal.ca/')
 }
