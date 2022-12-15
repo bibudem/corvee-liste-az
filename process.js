@@ -6,8 +6,11 @@ import { hideBin } from 'yargs/helpers'
 import { table, getBorderCharacters } from 'table'
 import colors from 'colors/safe.js'
 import { CorveeProcessor } from 'corvee-processor'
-import { filters, messages } from './filters/index.js'
 import { console, inspect } from 'corvee-core'
+import { filters, messages } from './filters/index.js'
+import { toCsv } from './utils/to-csv.js'
+import { pick } from 'underscore'
+import { mapKeys } from 'lodash-es'
 
 const start = Date.now();
 const today = new Date();
@@ -172,7 +175,7 @@ async function doProcess(records) {
     console.log(`${n(result.filtered)} items filtered.`);
     console.log(`${n(result.unfilteredRecords.length)} items unfiltered.`);
     console.log(`${n(result.nbOut)} items out.`);
-    console.log(`Records properties: ${[...reportProperties.values()].sort().join(', ')}`)
+    // console.log(`Records properties: ${[...reportProperties.values()].sort().join(', ')}`)
 
     await writeFile(processedFilePath, JSON.stringify(result.records, null, 2))
 
@@ -196,6 +199,44 @@ async function doProcess(records) {
         .filter(record => Array.isArray(record.reports) && record.reports.length > 0);
 
     console.log(`Found ${n(result.records.length)} records with problem.`)
+
+    const csvRecordHeaders = {
+        'id': 'id',
+        'url': 'url',
+        'text': 'texte',
+        'httpStatusCode': 'status http',
+        'urlAz': 'url inscrite dans AZ',
+        'finalUrl': 'url final',
+        'rapport': 'rapport'
+    }
+
+    const csvData = result.records
+        .map(record => {
+            let urlAz = ''
+            if (record.redirectChain) {
+                urlAz = record.redirectChain[0].url
+            }
+            record.urlAz = urlAz
+            return record
+        })
+        .map(record => {
+            if (record.reports) {
+                record.rapport = record.reports.map(report => `[${report.code}] ${report.message}`).join('; ')
+            }
+            return record
+        })
+        .map(record => pick(record, ['id', 'url', 'text', 'httpStatusCode', 'urlAz', 'finalUrl', 'rapport']))
+        .map(record => {
+            return mapKeys(record, (value, key) => {
+                return csvRecordHeaders[key]
+            })
+        })
+
+    await toCsv({
+        data: csvData,
+        dir: baseDir,
+        job
+    })
 
     const sortedSilentErrors = [...silentReports.entries()]
         .sort((a, b) => {

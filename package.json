@@ -16,13 +16,15 @@
     "author": "",
     "license": "ISC",
     "dependencies": {
+        "axios": "^1.2.1",
+        "colors": "^1.4.0",
         "corvee-core": "file:../corvee/packages/core",
         "corvee-harvester": "file:../corvee/packages/harvester",
         "corvee-processor": "file:../corvee/packages/processor",
-        "axios": "^1.2.1",
-        "colors": "^1.4.0",
         "jsdom": "^20.0.3",
+        "lodash-es": "^4.17.21",
         "table": "^6.8.1",
+        "underscore": "^1.13.6",
         "yargs": "^17.6.2"
     }
 }
