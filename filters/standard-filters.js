@@ -2,27 +2,25 @@ import { filters as _, messagesFrCA } from 'corvee-processor'
 
 export const standardFilters = [
     _.http30xAllTempRedirects,
-    _.http30xPermanentRedirectSuccessfull,
+    new _.Http30xPermanentRedirectSuccessful(),
     _.http30xPermanentRedirectFailure,
     {
         ..._.http30xCircularRedirection,
         exclude: true // KEEP
     },
     {
-        ..._.http30xMissingSlash,
+        ..._.http30xSlash,
         exclude: true // KEEP
     },
     _.http30xHttpsUpgradeAny,
-    new _.http30xHttpsUpgradeLoose({
+    new _.Http30xHttpsUpgradeLoose({
         ignoreWww: true
     }),
-    new _.http30xHttpsUpgradeStrict({
+    new _.Http30xHttpsUpgradeStrict({
         ignoreWww: false,
-        level: 'info',
-        limit: 1000,
-        // exclude: true
+        level: 'error',
     }),
-    _.http30xWelcomePage,
+    _.http30xRedirectToWelcomePage,
     _.http307HSTSRedirect,
 
     _.netSystem,
